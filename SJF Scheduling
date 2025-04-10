@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+struct Process{
+    int id,at,bt,ct,tat,wt,completed;
+};
+
+void sjf(struct Process p[],int n){
+    printf("\n\nGantt Chart\n\n");
+    int time=0,done=0;
+    float totalTAT=0,totalWT=0;
+    while(done<n){
+        int idx=-1,minBT=999;
+        for(int i=0;i<n;i++){
+            if(!p[i].completed && p[i].at<=time && p[i].bt<minBT){
+                minBT=p[i].bt;
+                idx=i;}}
+                
+            if(idx==-1){
+                printf("| idle ");
+                time++;
+                continue;
+            }
+            printf("| P%d ",p[idx].id);
+            time+=p[idx].bt;
+            p[idx].ct=time;
+            p[idx].tat=p[idx].ct-p[idx].at;
+            p[idx].wt=p[idx].tat-p[idx].bt;
+            p[idx].completed=1;
+            
+            totalTAT+=p[idx].tat;
+            totalWT+=p[idx].wt;
+            done++;
+    }
+    printf("|\n");
+    time=0;
+    printf("0");
+    for(int i=0;i<n;i++){
+        if(p[i].completed && p[i].ct>time){
+            printf("  %d",p[i].ct);
+            time=p[i].ct;
+        }
+    }
+    printf("\n\nPID\tAT\tBT\tCT\tTAT\tWT\n");
+    for(int i=0;i<n;i++){
+        printf("%d\t%d\t%d\t%d\t%d\t%d\n",p[i].id,p[i].at,p[i].bt,p[i].ct,p[i].tat,p[i].wt);
+    }
+    printf("Average TAT : %.2f\n",totalTAT/n);
+    printf("Average WT : %.2f\n",totalWT/n);
+}
+
+int main(){
+    int n;
+    printf("enter no of processes : ");
+    scanf("%d",&n);
+    struct Process p[n];
+    for(int i=0;i<n;i++){
+        p[i].id=i+1;
+        printf("enter AT and BT of process %d : ",p[i].id);
+        scanf("%d%d",&p[i].at,&p[i].bt);
+        p[i].completed=0;
+    }
+    sjf(p,n);
+    return 0;
+    
+}
