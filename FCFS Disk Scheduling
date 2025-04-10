@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
+    int n,head;
+    int total_movement=0;
+    
+    printf("enter no of disk requests : ");
+    scanf("%d",&n);
+    int res[n];
+    
+    printf("enter sequence of disk requests : ");
+    for(int i=0;i<n;i++){
+        scanf("%d",&res[i]);
+    }
+    
+    printf("enter initial position of head : ");
+    scanf("%d",&head);
+    
+    printf("FCFS Sequence : ");
+    for(int i=0;i<n;i++){
+        printf(" %d -> ",res[i]);
+        total_movement+=abs(head-res[i]);
+        head=res[i];
+    }
+    
+    printf("End\n");
+    printf("Total movement : %d\n",total_movement);
+    return 0;
+    
+}
