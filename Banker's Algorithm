@@ -1,0 +1,73 @@
+#include <stdio.h>
+
+int isSafe(int avail[],int need[],int r){
+    for(int i=0;i<r;i++){
+        if(need[i]>avail[i]){
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int main(){
+    int n,r;
+    printf("enter no of processes : ");
+    scanf("%d",&n);
+    printf("enter no of resources : ");
+    scanf("%d",&r);
+    int alloc[n][r],max[n][r],need[n][r],avail[r],finish[n],safeSeq[n];
+    
+    printf("enter available resources : \n");
+    for(int i=0;i<r;i++){
+        scanf("%d",&avail[i]);
+    }
+    
+    printf("enter allocated matrix : \n");
+    for(int i=0;i<n;i++){
+        for(int j=0;j<r;j++){
+            scanf("%d",&alloc[i][j]);
+        }
+    }
+    
+    printf("enter max matrix : \n");
+    for(int i=0;i<n;i++){
+        for(int j=0;j<r;j++){
+            scanf("%d",&max[i][j]);
+        }
+    }
+    
+    for(int i=0;i<n;i++){
+        for(int j=0;j<r;j++){
+            need[i][j]=max[i][j]-alloc[i][j];
+        }
+    }
+    
+    for(int i=0;i<n;i++){
+        finish[i]=0;
+    }
+    
+    int count=0;
+    while(count<n){
+        int found=0;
+        for(int i=0;i<n;i++){
+            if(!finish[i] && isSafe(avail,need[i],r)){
+                for(int j=0;j<r;j++){
+                    avail[j]+=alloc[i][j];}
+                    safeSeq[count++]=i;
+                    found=1;
+            }if(!found){
+                break; //deadlock
+            }
+        }
+    }
+    if(count==n){
+        printf("Safe Sequence is : ");
+        for(int i=0;i<n;i++){
+            printf("P%d\t",safeSeq[i]);
+        }printf("\t");
+    }else{
+        printf("It results in a deadlock");
+    }
+    return 0;
+    
+}
