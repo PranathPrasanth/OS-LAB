@@ -1,0 +1,59 @@
+#include <stdio.h>
+
+struct Process {
+    int id, at, bt, ct, tat, wt;
+};
+
+void fcfs(struct Process p[], int n) {
+    int time = 0;
+    float totalTAT = 0, totalWT = 0;
+
+    printf("\nGantt Chart:\n0");
+    for (int i = 0; i < n; i++) {
+        if (time < p[i].at) {
+            printf(" | Idle ");
+            time = p[i].at;
+            printf("%d", time);
+        }
+        p[i].ct = time + p[i].bt;
+        p[i].tat = p[i].ct - p[i].at;
+        p[i].wt = p[i].tat - p[i].bt;
+        time = p[i].ct;
+        printf(" | P%d %d", p[i].id, time);
+        totalTAT += p[i].tat;
+        totalWT += p[i].wt;
+    }
+    printf(" |\n\n");
+
+    printf("ID\tAT\tBT\tCT\tTAT\tWT\n");
+    for (int i = 0; i < n; i++)
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n", p[i].id, p[i].at, p[i].bt, p[i].ct, p[i].tat, p[i].wt);
+
+    printf("\nAverage TAT: %.2f", totalTAT / n);
+    printf("\nAverage WT: %.2f\n", totalWT / n);
+}
+
+int main() {
+    int n;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    struct Process p[n];
+    for (int i = 0; i < n; i++) {
+        p[i].id = i + 1;
+        printf("Enter AT and BT for P%d: ", p[i].id);
+        scanf("%d%d", &p[i].at, &p[i].bt);
+    }
+
+    // Sort by arrival time
+    for (int i = 0; i < n - 1; i++)
+        for (int j = i + 1; j < n; j++)
+            if (p[j].at < p[i].at) {
+                struct Process temp = p[i];
+                p[i] = p[j];
+                p[j] = temp;
+            }
+
+    fcfs(p, n);
+    return 0;
+}
