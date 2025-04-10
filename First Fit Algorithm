@@ -1,0 +1,71 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+typedef struct Block{
+    int size,remaining;
+    struct Block *next;
+}Block;
+
+typedef struct Process{
+    int size;
+}Process;
+
+Block* createBlock(int size){
+    Block* newBlock=(Block*)malloc(sizeof(Block));
+    newBlock->size=newBlock->remaining=size;
+    newBlock->next=NULL;
+    return newBlock;
+}
+
+void firstFit(Block* blocks,Process* processes,int processCount){
+    printf("\nFirst-Fit Allocation\n --------------------\n ");
+    printf("Process | Size | Block | Remaining \n ---------------------------------\n");
+    
+    for(int i=0;i<processCount;i++){
+        Block* current = blocks;
+        while(current){
+            if(current->remaining>=processes[i].size){
+                printf("|   %2d |   %3d |   %3d |   %3d |",i+1,processes[i].size,current->size,current->remaining-processes[i].size);
+                current->remaining-=processes[i].size;
+                break;
+            }
+            current=current->next;
+        }
+        if(!current){
+            printf("|   %2d |   %3d |   N/A | N/A   |",i+1,processes[i].size);
+        }
+        printf("\n -----------------------------\n");
+    }
+}
+
+int main(){
+    int blockCount,processCount,size;
+    Block *blocks=NULL,*tail=NULL;
+    
+    printf("enter no of blocks:\n");
+    scanf("%d",&blockCount);
+    for(int i=0;i<blockCount;i++){
+        printf("Block %d size : ",i+1);
+        scanf("%d",&size);
+        Block* newBlock=createBlock(size);
+        if(!blocks){
+            blocks = newBlock;
+            tail = newBlock;
+        }
+        else{
+            tail->next=newBlock;
+            tail = newBlock;
+        }
+    }
+    
+    printf("Enter no of processes : \n");
+    scanf("%d",&processCount);
+    Process processes[processCount];
+    for(int i=0;i<processCount;i++){
+        printf("Process %d size : \n",i+1);
+        scanf("%d",&processes[i].size);
+    }
+    
+    firstFit(blocks,processes,processCount);
+    return 0;
+}
