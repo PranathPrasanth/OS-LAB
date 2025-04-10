@@ -1,0 +1,64 @@
+#include <stdio.h>
+
+struct Process {
+    int id, at, bt, ct, tat, wt, pr, completed;
+};
+
+void priorityScheduling(struct Process p[], int n) {
+    int time = 0, done = 0;
+    float totalTAT = 0, totalWT = 0;
+
+    printf("\nGantt Chart:\n");
+
+    while (done < n) {
+        int minPr = 9999, idx = -1;
+        for (int i = 0; i < n; i++) {
+            if (!p[i].completed && p[i].at <= time && p[i].pr < minPr) {
+                minPr = p[i].pr;
+                idx = i;
+            }
+        }
+
+        if (idx == -1) {
+            printf("| Idle ");
+            time++;
+        } else {
+            printf("| P%d ", p[idx].id);
+            time += p[idx].bt;
+            p[idx].ct = time;
+            p[idx].tat = p[idx].ct - p[idx].at;
+            p[idx].wt = p[idx].tat - p[idx].bt;
+            totalTAT += p[idx].tat;
+            totalWT += p[idx].wt;
+            p[idx].completed = 1;
+            done++;
+        }
+    }
+
+    printf("|\n");
+
+    // Print process info
+    printf("\nProcess\tAT\tBT\tPR\tCT\tTAT\tWT\n");
+    for (int i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n", p[i].id, p[i].at, p[i].bt, p[i].pr, p[i].ct, p[i].tat, p[i].wt);
+    }
+
+    printf("\nAverage TAT = %.2f\n", totalTAT / n);
+    printf("Average WT  = %.2f\n", totalWT / n);
+}
+
+int main() {
+    int n;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    struct Process p[n];
+
+    for (int i = 0; i < n; i++) {
+        printf("Enter AT, BT, Priority for P%d: ", p[i].id);
+        scanf("%d %d %d", &p[i].at, &p[i].bt, &p[i].pr);
+        p[i].completed = 0;
+    }
+
+    priorityScheduling(p, n);
+    return 0;
+}
