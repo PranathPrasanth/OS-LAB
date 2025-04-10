@@ -1,0 +1,23 @@
+// reader.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+int main(){
+    key_t key=ftok("shmfile",65);
+    int shmid=shmget(key,1024,0666);
+    if(shmid==-1){
+        perror("cannot get shared memory");
+        return 1;
+    }
+    char *str=(char*)shmat(shmid,NULL,0);
+    if(str==(char*)-1){
+        perror("cannot attach to shared memory");
+        return 1;
+    }
+    printf("Contents of shared memory : %s\n",str);
+    shmdt(str);
+    shmctl(shmid,IPC_RMID,NULL); // optional: removes shared memory
+    return 0;
+}
