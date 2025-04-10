@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Block{
+    int size,remaining;
+    struct Block* next;
+}Block;
+
+typedef struct Process{
+    int size;
+}Process;
+
+Block* createBlock(int size){
+    Block* newBlock = (Block*)malloc(sizeof(Block));
+    newBlock->size = newBlock->remaining = size;
+    newBlock->next = NULL;
+    return newBlock;
+}
+
+void worstFit(Block* blocks,Process* processes,int processCount){
+    printf("Worst-Fit Algorithm");
+    printf("\n------------------\n");
+    printf("| Process | Size | Block | Free |");
+    printf("\n------------------------------\n");
+    
+    for(int i=0;i<processCount;i++){
+        Block* worst=NULL,*current=blocks;
+        while(current){
+            if(current->remaining>=processes[i].size && (!worst || current->remaining > worst->remaining)){
+                worst=current;
+            }current=current->next;
+        }
+        if(worst){
+            worst->remaining-=processes[i].size;
+            printf("|   %d      |   %d      |   %d      |   %d      |",i+1,processes[i].size,worst->size,worst->remaining);
+        }
+        else{
+            printf(" |  %d      |   %d      | N/A       |   N/A     |",i+1,processes[i].size);
+        }printf("\n--------------------------\n");
+    }
+}
+
+int main(){
+    int blockCount,size,processCount;
+    printf("enter no of blocks :  ");
+    scanf("%d",&blockCount);
+    Block *blocks=NULL,*last=NULL;
+    
+    for(int i=0;i<blockCount;i++){
+        printf("enter block %d size : ",i+1);
+        scanf("%d",&size);
+        Block* newBlock = createBlock(size);
+        if(!blocks){
+            blocks=newBlock;
+            last=newBlock;
+        }
+        else{
+            last->next=newBlock;
+            last=newBlock;
+        }
+    }
+    printf("enter no of processes : ");
+    scanf("%d",&processCount);
+    Process processes[processCount];
+    for(int i=0;i<processCount;i++){
+        printf("enter process %d size : ",i+1);
+        scanf("%d",&processes[i].size);
+    }
+    
+    worstFit(blocks,processes,processCount);
+    return 0;
+}
